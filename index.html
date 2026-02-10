@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramadan Schedule Planner for 9-5ers | Plan Your Perfect Day</title>
+    <title>Ramadan Schedule Builder for 9-5ers | Smart Calendar Sync</title>
     <style>
         * {
             margin: 0;
@@ -19,181 +19,104 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
+        }
+
+        .card {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
         .header {
-            background: linear-gradient(135deg, #1a472a 0%, #2d5f3f 100%);
-            color: white;
-            padding: 40px 30px;
             text-align: center;
+            color: white;
+            margin-bottom: 30px;
         }
 
         .header h1 {
             font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .header .moon {
-            font-size: 3em;
             margin-bottom: 10px;
         }
 
         .header p {
             font-size: 1.1em;
             opacity: 0.9;
-            margin-bottom: 5px;
         }
 
-        .header .subtitle {
-            font-size: 0.95em;
-            opacity: 0.7;
-            font-style: italic;
-        }
-
-        .content {
-            padding: 40px 30px;
-        }
-
-        .intro {
-            background: #f0f9f4;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            border-left: 4px solid #2d5f3f;
-        }
-
-        .intro h2 {
-            color: #1a472a;
-            margin-bottom: 10px;
-            font-size: 1.3em;
-        }
-
-        .intro p {
-            color: #555;
-            line-height: 1.6;
-        }
-
-        .schedule-section {
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
             margin-bottom: 30px;
         }
 
-        .section-header {
-            background: #2d5f3f;
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-weight: 600;
-            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .step.active {
+            background: #ffc107;
+            transform: scale(1.2);
+        }
+
+        .step.completed {
+            background: #4caf50;
+        }
+
+        .section-title {
+            color: #1a472a;
+            font-size: 1.5em;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .time-block {
-            background: #fafafa;
-            padding: 15px 20px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            display: grid;
-            grid-template-columns: 120px 1fr 200px;
-            gap: 15px;
-            align-items: center;
-            border: 1px solid #e0e0e0;
-            transition: all 0.3s ease;
-        }
-
-        .time-block:hover {
-            background: #f5f5f5;
-            border-color: #2d5f3f;
-            transform: translateX(5px);
-        }
-
-        .time-input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 1em;
-            font-weight: 600;
-            color: #1a472a;
-            text-align: center;
-            transition: border-color 0.3s;
-        }
-
-        .time-input:focus {
-            outline: none;
-            border-color: #2d5f3f;
-        }
-
-        .activity-label {
-            color: #333;
-            font-weight: 500;
-        }
-
-        .tip {
-            color: #666;
-            font-size: 0.85em;
-            font-style: italic;
-        }
-
-        .tips-grid {
+        .quick-setup {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
-            margin-top: 30px;
+            margin-bottom: 30px;
         }
 
-        .tip-card {
-            background: #fff9e6;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #ffc107;
+        .input-group {
+            margin-bottom: 20px;
         }
 
-        .tip-card h3 {
-            color: #1a472a;
-            margin-bottom: 10px;
-            font-size: 1em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tip-card ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .tip-card li {
-            color: #555;
+        .input-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
             margin-bottom: 8px;
-            padding-left: 20px;
-            position: relative;
-            font-size: 0.9em;
-            line-height: 1.5;
         }
 
-        .tip-card li:before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #2d5f3f;
-            font-weight: bold;
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-            flex-wrap: wrap;
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #2d5f3f;
         }
 
         .btn {
@@ -203,14 +126,17 @@
             font-size: 1em;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            flex: 1;
-            min-width: 200px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .btn-primary {
             background: #2d5f3f;
             color: white;
+            width: 100%;
+            justify-content: center;
         }
 
         .btn-primary:hover {
@@ -220,24 +146,103 @@
         }
 
         .btn-secondary {
-            background: white;
-            color: #2d5f3f;
-            border: 2px solid #2d5f3f;
+            background: #ffc107;
+            color: #333;
         }
 
         .btn-secondary:hover {
-            background: #f0f9f4;
+            background: #ffb300;
         }
 
-        .note {
-            background: #e3f2fd;
-            padding: 15px 20px;
+        .schedule-output {
+            display: none;
+        }
+
+        .schedule-output.active {
+            display: block;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 80px 1fr 120px;
+            gap: 1px;
+            background: #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .schedule-header {
+            background: #1a472a;
+            color: white;
+            padding: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .schedule-row {
+            background: white;
+            padding: 12px;
+            display: contents;
+        }
+
+        .schedule-row > div {
+            padding: 12px;
+            background: white;
+        }
+
+        .schedule-row:nth-child(even) > div {
+            background: #f9f9f9;
+        }
+
+        .time-cell {
+            font-weight: bold;
+            color: #2d5f3f;
+            text-align: center;
+        }
+
+        .activity-cell {
+            color: #333;
+        }
+
+        .icon-cell {
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .export-section {
+            background: #f0f9f4;
+            padding: 20px;
             border-radius: 8px;
             margin-top: 20px;
-            color: #1565c0;
-            font-size: 0.95em;
-            text-align: center;
-            border-left: 4px solid #2196f3;
+        }
+
+        .export-section h3 {
+            color: #1a472a;
+            margin-bottom: 15px;
+        }
+
+        .tip-box {
+            background: #fff9e6;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .tip-box strong {
+            color: #1a472a;
+        }
+
+        .hidden {
+            display: none;
         }
 
         @media (max-width: 768px) {
@@ -245,37 +250,70 @@
                 font-size: 1.8em;
             }
 
-            .time-block {
+            .quick-setup {
                 grid-template-columns: 1fr;
-                gap: 10px;
             }
 
-            .tip {
-                margin-top: 5px;
+            .schedule-grid {
+                font-size: 0.85em;
             }
 
-            .content {
-                padding: 30px 20px;
+            .action-buttons {
+                grid-template-columns: 1fr;
             }
+        }
 
-            .btn {
-                min-width: 100%;
-            }
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            padding: 20px;
+            opacity: 0.8;
         }
 
         @media print {
             body {
                 background: white;
                 padding: 0;
+                margin: 0;
+            }
+
+            .header,
+            .step-indicator,
+            .export-section,
+            .tip-box,
+            .footer,
+            button {
+                display: none !important;
             }
 
             .container {
-                box-shadow: none;
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
             }
 
-            .action-buttons,
-            .note {
-                display: none;
+            .card {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 20px;
+                margin: 0;
+                page-break-inside: avoid;
+            }
+
+            #setupCard {
+                display: none !important;
+            }
+
+            .section-title {
+                margin-top: 0;
+                padding-top: 0;
+                page-break-after: avoid;
+            }
+
+            .schedule-grid {
+                page-break-inside: avoid;
+                margin-top: 10px;
             }
         }
     </style>
@@ -283,253 +321,328 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="moon">🌙</div>
-            <h1>My Ramadan Schedule</h1>
-            <p>for 9-5 Working Professionals</p>
-            <p class="subtitle">Plan your perfect day, balance work & worship</p>
+            <h1>🌙 Ramadan Schedule Builder</h1>
+            <p>For 9-5 Working Professionals</p>
         </div>
 
-        <div class="content">
-            <div class="intro">
-                <h2>✨ Welcome!</h2>
-                <p>Fill in your ideal times below. This is YOUR schedule - customize it based on your work hours, commute, and energy levels. Don't stress about perfection; adjust as you go through Ramadan!</p>
-            </div>
+        <div class="step-indicator">
+            <div class="step active" id="step1">1</div>
+            <div class="step" id="step2">2</div>
+            <div class="step" id="step3">3</div>
+        </div>
 
-            <!-- PRE-DAWN -->
-            <div class="schedule-section">
-                <div class="section-header">
-                    <span>🌅</span> PRE-DAWN
+        <!-- STEP 1: Quick Setup -->
+        <div class="card" id="setupCard">
+            <h2 class="section-title">⚡ Quick Setup (30 seconds)</h2>
+            
+            <div class="quick-setup">
+                <div class="input-group">
+                    <label>🕌 What time is Fajr?</label>
+                    <input type="time" id="fajrTime" value="04:45">
                 </div>
 
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="04:00">
-                    <div class="activity-label">Wake up for Suhoor</div>
-                    <div class="tip">Set alarm 30 mins before Fajr</div>
+                <div class="input-group">
+                    <label>🌅 What time is Maghrib?</label>
+                    <input type="time" id="maghribTime" value="19:15">
                 </div>
 
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="04:15">
-                    <div class="activity-label">Eat Suhoor</div>
-                    <div class="tip">Protein + complex carbs = sustained energy</div>
+                <div class="input-group">
+                    <label>💼 What time do you start work?</label>
+                    <input type="time" id="workStart" value="09:00">
                 </div>
 
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="04:45">
-                    <div class="activity-label">Fajr Prayer</div>
-                    <div class="tip">Don't rush it - quality over speed</div>
+                <div class="input-group">
+                    <label>🏠 What time do you leave work?</label>
+                    <input type="time" id="workEnd" value="17:00">
                 </div>
 
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="05:00">
-                    <div class="activity-label">Quran / Dhikr / Dua</div>
-                    <div class="tip">Even 5 minutes makes a difference</div>
+                <div class="input-group">
+                    <label>⏱️ How long is your commute? (one way)</label>
+                    <select id="commuteTime">
+                        <option value="0">Work from home</option>
+                        <option value="15">15 minutes</option>
+                        <option value="30" selected>30 minutes</option>
+                        <option value="45">45 minutes</option>
+                        <option value="60">1 hour</option>
+                        <option value="90">1.5 hours</option>
+                    </select>
                 </div>
 
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="05:15">
-                    <div class="activity-label">Sleep OR Get Ready for Work</div>
-                    <div class="tip">Choose based on your work start time</div>
-                </div>
-            </div>
-
-            <!-- MORNING -->
-            <div class="schedule-section">
-                <div class="section-header">
-                    <span>🌄</span> MORNING
-                </div>
-
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="07:00">
-                    <div class="activity-label">Commute / Start Work</div>
-                    <div class="tip">Listen to Quran or Islamic podcasts</div>
-                </div>
-
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="10:30">
-                    <div class="activity-label">Mid-morning Break</div>
-                    <div class="tip">Quick dua, stretch, stay positive!</div>
+                <div class="input-group">
+                    <label>😴 Preferred sleep hours per night?</label>
+                    <select id="sleepHours">
+                        <option value="5">5 hours (tough!)</option>
+                        <option value="6" selected>6 hours</option>
+                        <option value="7">7 hours</option>
+                        <option value="8">8 hours</option>
+                    </select>
                 </div>
             </div>
 
-            <!-- MIDDAY -->
-            <div class="schedule-section">
-                <div class="section-header">
-                    <span>☀️</span> MIDDAY
-                </div>
+            <div class="tip-box">
+                <strong>💡 Pro Tip:</strong> Be realistic! Your schedule should work for you, not stress you out.
+            </div>
 
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="12:30">
-                    <div class="activity-label">Dhuhr Prayer</div>
-                    <div class="tip">Use lunch break or prayer room at work</div>
-                </div>
+            <button class="btn btn-primary" onclick="generateSchedule()">
+                ✨ Generate My Perfect Schedule
+            </button>
+        </div>
 
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="12:45">
-                    <div class="activity-label">Lunch Break Activity</div>
-                    <div class="tip">Read Quran app, rest, or take a walk</div>
+        <!-- STEP 2: Your Schedule -->
+        <div class="card schedule-output" id="scheduleCard">
+            <h2 class="section-title">📋 Your Personalized Ramadan Schedule</h2>
+            
+            <div id="scheduleDisplay"></div>
+
+            <div class="export-section">
+                <h3>📱 Sync with Your Phone</h3>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="exportToGoogleCalendar()">
+                        📅 Add to Google Calendar
+                    </button>
+                    <button class="btn btn-secondary" onclick="downloadICS()">
+                        📲 Download .ics (iPhone/Outlook)
+                    </button>
+                    <button class="btn btn-secondary" onclick="copyScheduleText()">
+                        📋 Copy as Text
+                    </button>
+                    <button class="btn btn-primary" onclick="window.print()">
+                        🖨️ Print One-Page Summary
+                    </button>
                 </div>
             </div>
 
-            <!-- AFTERNOON -->
-            <div class="schedule-section">
-                <div class="section-header">
-                    <span>🌤️</span> AFTERNOON
-                </div>
-
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="03:30">
-                    <div class="activity-label">Asr Prayer</div>
-                    <div class="tip">Quick 5-minute break is enough</div>
-                </div>
-
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="04:00">
-                    <div class="activity-label">Work Wind-down</div>
-                    <div class="tip">Save low-energy tasks for now</div>
-                </div>
-
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="05:00">
-                    <div class="activity-label">Leave Work / Commute Home</div>
-                    <div class="tip">Make dua for a good day</div>
-                </div>
+            <div class="tip-box">
+                <strong>✅ Next Steps:</strong> 
+                <br>1. Click "Download .ics" to get your calendar file
+                <br>2. Open it on your phone - it'll create recurring alarms for all 30 days!
+                <br>3. Print the one-page summary for your wall/desk
             </div>
 
-            <!-- EVENING -->
-            <div class="schedule-section">
-                <div class="section-header">
-                    <span>🌆</span> EVENING
-                </div>
+            <button class="btn btn-secondary" onclick="resetSchedule()" style="margin-top: 20px;">
+                🔄 Start Over
+            </button>
+        </div>
 
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="06:00">
-                    <div class="activity-label">Rest / Power Nap (Optional)</div>
-                    <div class="tip">20-30 mins can recharge you!</div>
-                </div>
-
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="06:45">
-                    <div class="activity-label">Iftar Prep</div>
-                    <div class="tip">Keep it simple - prep on weekends!</div>
-                </div>
-
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="07:15">
-                    <div class="activity-label">Maghrib Prayer + Iftar</div>
-                    <div class="tip">Start with dates & water, pray, then eat</div>
-                </div>
-
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="07:45">
-                    <div class="activity-label">Dinner</div>
-                    <div class="tip">Eat slowly, don't overdo it</div>
-                </div>
-            </div>
-
-            <!-- NIGHT -->
-            <div class="schedule-section">
-                <div class="section-header">
-                    <span>🌙</span> NIGHT
-                </div>
-
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="08:30">
-                    <div class="activity-label">Isha Prayer</div>
-                    <div class="tip">At home or masjid - your choice</div>
-                </div>
-
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="08:45">
-                    <div class="activity-label">Taraweeh</div>
-                    <div class="tip">Even 8 rakah is beautiful!</div>
-                </div>
-
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="09:45">
-                    <div class="activity-label">Personal / Family Time</div>
-                    <div class="tip">Quality time matters - stay present</div>
-                </div>
-
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="10:30">
-                    <div class="activity-label">Night Ibadah / Quran</div>
-                    <div class="tip">Wind down with some Quran</div>
-                </div>
-
-                <div class="time-block">
-                    <input type="time" class="time-input" placeholder="11:00">
-                    <div class="activity-label">Sleep</div>
-                    <div class="tip">Aim for 6-7 hours total sleep</div>
-                </div>
-            </div>
-
-            <!-- TIPS SECTION -->
-            <div class="tips-grid">
-                <div class="tip-card">
-                    <h3>💡 Success Tips</h3>
-                    <ul>
-                        <li>Start adjusting sleep NOW</li>
-                        <li>Meal prep on Sundays</li>
-                        <li>Communicate with manager</li>
-                        <li>Keep dates at your desk</li>
-                        <li>Stay hydrated after iftar</li>
-                    </ul>
-                </div>
-
-                <div class="tip-card">
-                    <h3>⚡ Energy Hacks</h3>
-                    <ul>
-                        <li>Power nap before iftar</li>
-                        <li>Avoid sugar crashes</li>
-                        <li>Walk after meals</li>
-                        <li>Never skip suhoor!</li>
-                        <li>Protein > carbs at suhoor (proteins take more time to breakdown unlike carbs and therefore last longer)</li>
-                    </ul>
-                </div>
-
-                <div class="tip-card">
-                    <h3>🎯 Productivity</h3>
-                    <ul>
-                        <li>Hard tasks before lunch</li>
-                        <li>Light work after 3pm</li>
-                        <li>Batch similar tasks</li>
-                        <li>Use lunch for ibadah</li>
-                        <li>Plan tomorrow at iftar</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- ACTION BUTTONS -->
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="window.print()">🖨️ Print My Schedule</button>
-                <button class="btn btn-secondary" onclick="resetSchedule()">🔄 Start Over</button>
-            </div>
-
-            <div class="note">
-                ✏️ Tip: Screenshot this page or print it out! Adjust your schedule as Ramadan progresses - consistency beats perfection. 🤲
-            </div>
-
-            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #888; font-size: 0.9em;">
-                © iTheLance
-            </div>
+        <div class="footer">
+            <p>Made with ❤️ for the Ummah</p>
+            <p>© iTheLance</p>
         </div>
     </div>
 
     <script>
-        function resetSchedule() {
-            const inputs = document.querySelectorAll('.time-input');
-            inputs.forEach(input => input.value = '');
+        let generatedSchedule = [];
+
+        function generateSchedule() {
+            // Get inputs
+            const fajr = document.getElementById('fajrTime').value;
+            const maghrib = document.getElementById('maghribTime').value;
+            const workStart = document.getElementById('workStart').value;
+            const workEnd = document.getElementById('workEnd').value;
+            const commute = parseInt(document.getElementById('commuteTime').value);
+            const sleepHours = parseInt(document.getElementById('sleepHours').value);
+
+            // Calculate key times
+            const fajrMinutes = timeToMinutes(fajr);
+            const maghribMinutes = timeToMinutes(maghrib);
+            const workStartMinutes = timeToMinutes(workStart);
+            const workEndMinutes = timeToMinutes(workEnd);
+
+            // Build smart schedule
+            const schedule = [];
+
+            // Suhoor - 30 mins before Fajr
+            const suhoorTime = minutesToTime(fajrMinutes - 30);
+            schedule.push({ time: suhoorTime, activity: 'Wake up & Suhoor', icon: '🍽️', alarm: true });
+            
+            // Fajr
+            schedule.push({ time: fajr, activity: 'Fajr Prayer', icon: '🕌', alarm: true });
+            
+            // Post-Fajr
+            const postFajr = minutesToTime(fajrMinutes + 15);
+            schedule.push({ time: postFajr, activity: 'Quran/Dhikr (5-10 mins)', icon: '📖', alarm: false });
+            
+            // Sleep or work prep
+            const bedtime = minutesToTime(1440 - (sleepHours * 60) + fajrMinutes - 30);
+            if (workStartMinutes - fajrMinutes - 15 > 90) {
+                const backToSleep = minutesToTime(fajrMinutes + 30);
+                schedule.push({ time: backToSleep, activity: 'Back to sleep', icon: '😴', alarm: false });
+                
+                const wakeForWork = minutesToTime(workStartMinutes - commute - 60);
+                schedule.push({ time: wakeForWork, activity: 'Wake & get ready', icon: '☀️', alarm: true });
+            }
+            
+            // Leave for work
+            if (commute > 0) {
+                const leaveTime = minutesToTime(workStartMinutes - commute);
+                schedule.push({ time: leaveTime, activity: 'Leave for work', icon: '🚗', alarm: true });
+            }
+            
+            // Dhuhr (assume 12:30pm)
+            schedule.push({ time: '12:30', activity: 'Dhuhr Prayer (lunch break)', icon: '🕌', alarm: true });
+            
+            // Asr (assume 3:30pm)
+            schedule.push({ time: '15:30', activity: 'Asr Prayer (quick break)', icon: '🕌', alarm: true });
+            
+            // Leave work
+            schedule.push({ time: workEnd, activity: 'Leave work', icon: '🏃', alarm: false });
+            
+            // Home arrival
+            const arriveHome = minutesToTime(workEndMinutes + commute);
+            schedule.push({ time: arriveHome, activity: 'Arrive home', icon: '🏠', alarm: false });
+            
+            // Power nap before iftar
+            const napTime = minutesToTime(maghribMinutes - 60);
+            schedule.push({ time: napTime, activity: 'Power nap (optional 20-30min)', icon: '😴', alarm: false });
+            
+            // Iftar prep
+            const iftarPrep = minutesToTime(maghribMinutes - 20);
+            schedule.push({ time: iftarPrep, activity: 'Iftar prep', icon: '🍳', alarm: true });
+            
+            // Maghrib & Iftar
+            schedule.push({ time: maghrib, activity: 'Maghrib Prayer & Iftar', icon: '🌙', alarm: true });
+            
+            // Dinner
+            const dinner = minutesToTime(maghribMinutes + 30);
+            schedule.push({ time: dinner, activity: 'Dinner (eat slowly)', icon: '🍽️', alarm: false });
+            
+            // Isha & Taraweeh
+            const isha = minutesToTime(maghribMinutes + 90);
+            schedule.push({ time: isha, activity: 'Isha & Taraweeh', icon: '🕌', alarm: true });
+            
+            // Personal time
+            const personalTime = minutesToTime(maghribMinutes + 150);
+            schedule.push({ time: personalTime, activity: 'Personal/Family time', icon: '❤️', alarm: false });
+            
+            // Night ibadah
+            const nightIbadah = minutesToTime(fajrMinutes - 90 + 1440);
+            schedule.push({ time: nightIbadah, activity: 'Night Quran/Dua', icon: '📿', alarm: false });
+            
+            // Bedtime
+            schedule.push({ time: bedtime, activity: 'Sleep', icon: '😴', alarm: true });
+
+            generatedSchedule = schedule;
+            displaySchedule(schedule);
+            
+            // Update UI
+            document.getElementById('setupCard').style.display = 'none';
+            document.getElementById('scheduleCard').classList.add('active');
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step1').classList.add('completed');
+            document.getElementById('step2').classList.add('active');
         }
 
-        // Add smooth scroll behavior
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
+        function displaySchedule(schedule) {
+            let html = '<div class="schedule-grid">';
+            html += '<div class="schedule-header">Time</div>';
+            html += '<div class="schedule-header">Activity</div>';
+            html += '<div class="schedule-header">Alarm?</div>';
+            
+            schedule.forEach(item => {
+                html += '<div class="schedule-row">';
+                html += `<div class="time-cell">${item.time}</div>`;
+                html += `<div class="activity-cell">${item.icon} ${item.activity}</div>`;
+                html += `<div class="icon-cell">${item.alarm ? '🔔' : ''}</div>`;
+                html += '</div>';
             });
-        });
+            
+            html += '</div>';
+            document.getElementById('scheduleDisplay').innerHTML = html;
+        }
+
+        function timeToMinutes(time) {
+            const [hours, minutes] = time.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        function minutesToTime(minutes) {
+            // Handle overflow past midnight
+            while (minutes >= 1440) minutes -= 1440;
+            while (minutes < 0) minutes += 1440;
+            
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+        }
+
+        function downloadICS() {
+            const fajr = document.getElementById('fajrTime').value;
+            const maghrib = document.getElementById('maghribTime').value;
+            
+            // Start date: March 1, 2025 (approximate - adjust based on moon sighting)
+            const startDate = new Date('2025-03-01');
+            
+            let icsContent = 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Ramadan Schedule//iTheLance//EN\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\n';
+            
+            generatedSchedule.forEach((item, index) => {
+                if (item.alarm) {
+                    const eventDate = new Date(startDate);
+                    const [hours, minutes] = item.time.split(':');
+                    eventDate.setHours(parseInt(hours), parseInt(minutes), 0);
+                    
+                    const dtStart = formatDateForICS(eventDate);
+                    const dtEnd = formatDateForICS(new Date(eventDate.getTime() + 30 * 60000)); // 30 min duration
+                    const summary = item.activity;
+                    
+                    icsContent += 'BEGIN:VEVENT\n';
+                    icsContent += `DTSTART:${dtStart}\n`;
+                    icsContent += `DTEND:${dtEnd}\n`;
+                    icsContent += `RRULE:FREQ=DAILY;COUNT=30\n`;
+                    icsContent += `SUMMARY:${summary}\n`;
+                    icsContent += `DESCRIPTION:Ramadan Schedule - ${item.icon} ${summary}\n`;
+                    icsContent += `BEGIN:VALARM\n`;
+                    icsContent += `TRIGGER:-PT5M\n`;
+                    icsContent += `ACTION:DISPLAY\n`;
+                    icsContent += `DESCRIPTION:${summary}\n`;
+                    icsContent += `END:VALARM\n`;
+                    icsContent += 'END:VEVENT\n';
+                }
+            });
+            
+            icsContent += 'END:VCALENDAR';
+            
+            const blob = new Blob([icsContent], { type: 'text/calendar' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ramadan-schedule-2025.ics';
+            a.click();
+            
+            alert('✅ Calendar file downloaded! Open it on your phone to import all 30 days of alarms.');
+        }
+
+        function formatDateForICS(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}${month}${day}T${hours}${minutes}00`;
+        }
+
+        function exportToGoogleCalendar() {
+            alert('📅 To add to Google Calendar:\n\n1. Download the .ics file using the button below\n2. Go to Google Calendar on desktop\n3. Click the "+" next to "Other calendars"\n4. Select "Import"\n5. Upload the .ics file\n\nAll 30 days will be added automatically!');
+        }
+
+        function copyScheduleText() {
+            let text = '🌙 MY RAMADAN SCHEDULE\n\n';
+            generatedSchedule.forEach(item => {
+                text += `${item.time} - ${item.activity} ${item.alarm ? '🔔' : ''}\n`;
+            });
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Schedule copied! Paste it anywhere you need.');
+            });
+        }
+
+        function resetSchedule() {
+            document.getElementById('setupCard').style.display = 'block';
+            document.getElementById('scheduleCard').classList.remove('active');
+            document.getElementById('step1').classList.add('active');
+            document.getElementById('step1').classList.remove('completed');
+            document.getElementById('step2').classList.remove('active');
+            window.scrollTo(0, 0);
+        }
     </script>
 </body>
 </html>
