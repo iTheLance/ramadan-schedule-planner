@@ -337,6 +337,14 @@
             
             <div class="quick-setup">
                 <div class="input-group">
+                    <label>📅 When does Ramadan start for you?</label>
+                    <input type="date" id="ramadanStart" value="2025-02-18">
+                    <small style="color: #666; font-size: 0.85em; margin-top: 5px; display: block;">
+                        Based on moon sighting in your area
+                    </small>
+                </div>
+
+                <div class="input-group">
                     <label>🕌 What time is Fajr?</label>
                     <input type="time" id="fajrTime" value="04:45">
                 </div>
@@ -358,14 +366,7 @@
 
                 <div class="input-group">
                     <label>⏱️ How long is your commute? (one way)</label>
-                    <select id="commuteTime">
-                        <option value="0">Work from home</option>
-                        <option value="15">15 minutes</option>
-                        <option value="30" selected>30 minutes</option>
-                        <option value="45">45 minutes</option>
-                        <option value="60">1 hour</option>
-                        <option value="90">1.5 hours</option>
-                    </select>
+                    <input type="time" id="commuteTime" value="00:30">
                 </div>
 
                 <div class="input-group">
@@ -380,7 +381,7 @@
             </div>
 
             <div class="tip-box">
-                <strong>💡 Pro Tip:</strong> Be realistic! Your schedule should work for you, not stress you out.
+                <strong>💡 Pro Tip:</strong> Ramadan 2025 likely starts February 18 (could be 17th depending on moon sighting). Adjust the date based on your local announcement!
             </div>
 
             <button class="btn btn-primary" onclick="generateSchedule()">
@@ -396,27 +397,33 @@
 
             <div class="export-section">
                 <h3>📱 Sync with Your Phone</h3>
+                <p style="color: #666; margin-bottom: 15px; font-size: 0.9em;">
+                    Choose your calendar app - all 30 days will be added automatically with alarms!
+                </p>
                 <div class="action-buttons">
-                    <button class="btn btn-secondary" onclick="exportToGoogleCalendar()">
+                    <button class="btn btn-secondary" onclick="addToGoogleCalendar()">
                         📅 Add to Google Calendar
                     </button>
                     <button class="btn btn-secondary" onclick="downloadICS()">
-                        📲 Download .ics (iPhone/Outlook)
+                        🍎 Add to Apple Calendar (.ics)
                     </button>
                     <button class="btn btn-secondary" onclick="copyScheduleText()">
                         📋 Copy as Text
                     </button>
                     <button class="btn btn-primary" onclick="window.print()">
-                        🖨️ Print One-Page Summary
+                        🖨️ Print One-Page
                     </button>
                 </div>
             </div>
 
             <div class="tip-box">
-                <strong>✅ Next Steps:</strong> 
-                <br>1. Click "Download .ics" to get your calendar file
-                <br>2. Open it on your phone - it'll create recurring alarms for all 30 days!
-                <br>3. Print the one-page summary for your wall/desk
+                <strong>✅ How to Sync:</strong> 
+                <br><br>
+                <strong>Google Calendar Users:</strong> Click "Add to Google Calendar" → It opens in browser → Click "Save" → Repeats for 30 days automatically!
+                <br><br>
+                <strong>iPhone/Apple Users:</strong> Click "Add to Apple Calendar" → Download file → Tap file on phone → Tap "Add All" → Done!
+                <br><br>
+                <strong>💡 Both methods add alarms that will wake you up/remind you automatically!</strong>
             </div>
 
             <button class="btn btn-secondary" onclick="resetSchedule()" style="margin-top: 20px;">
@@ -435,18 +442,26 @@
 
         function generateSchedule() {
             // Get inputs
+            const ramadanStart = document.getElementById('ramadanStart').value;
             const fajr = document.getElementById('fajrTime').value;
             const maghrib = document.getElementById('maghribTime').value;
             const workStart = document.getElementById('workStart').value;
             const workEnd = document.getElementById('workEnd').value;
-            const commute = parseInt(document.getElementById('commuteTime').value);
+            const commuteInput = document.getElementById('commuteTime').value;
             const sleepHours = parseInt(document.getElementById('sleepHours').value);
+
+            // Convert commute time to minutes
+            const [commuteHours, commuteMins] = commuteInput.split(':').map(Number);
+            const commute = (commuteHours * 60) + commuteMins;
 
             // Calculate key times
             const fajrMinutes = timeToMinutes(fajr);
             const maghribMinutes = timeToMinutes(maghrib);
             const workStartMinutes = timeToMinutes(workStart);
             const workEndMinutes = timeToMinutes(workEnd);
+
+            // Store start date for calendar export
+            window.ramadanStartDate = ramadanStart;
 
             // Build smart schedule
             const schedule = [];
@@ -566,13 +581,10 @@
         }
 
         function downloadICS() {
-            const fajr = document.getElementById('fajrTime').value;
-            const maghrib = document.getElementById('maghribTime').value;
+            // Get the user's selected start date
+            const startDate = new Date(window.ramadanStartDate || '2025-02-18');
             
-            // Start date: March 1, 2025 (approximate - adjust based on moon sighting)
-            const startDate = new Date('2025-03-01');
-            
-            let icsContent = 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Ramadan Schedule//iTheLance//EN\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\n';
+            let icsContent = 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Ramadan Schedule//iTheLance//EN\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\nX-WR-CALNAME:Ramadan 2025 Schedule\nX-WR-TIMEZONE:UTC\n';
             
             generatedSchedule.forEach((item, index) => {
                 if (item.alarm) {
@@ -582,18 +594,23 @@
                     
                     const dtStart = formatDateForICS(eventDate);
                     const dtEnd = formatDateForICS(new Date(eventDate.getTime() + 30 * 60000)); // 30 min duration
-                    const summary = item.activity;
+                    const summary = item.activity.replace(/🕌|🍽️|🍳|🌙|🚗|☀️/g, '').trim();
+                    
+                    // Create unique ID for each event
+                    const uid = `ramadan-${index}-${Date.now()}@ithelance.com`;
                     
                     icsContent += 'BEGIN:VEVENT\n';
+                    icsContent += `UID:${uid}\n`;
                     icsContent += `DTSTART:${dtStart}\n`;
                     icsContent += `DTEND:${dtEnd}\n`;
                     icsContent += `RRULE:FREQ=DAILY;COUNT=30\n`;
                     icsContent += `SUMMARY:${summary}\n`;
-                    icsContent += `DESCRIPTION:Ramadan Schedule - ${item.icon} ${summary}\n`;
+                    icsContent += `DESCRIPTION:Ramadan ${item.icon} ${summary}\n`;
+                    icsContent += `STATUS:CONFIRMED\n`;
                     icsContent += `BEGIN:VALARM\n`;
                     icsContent += `TRIGGER:-PT5M\n`;
                     icsContent += `ACTION:DISPLAY\n`;
-                    icsContent += `DESCRIPTION:${summary}\n`;
+                    icsContent += `DESCRIPTION:Reminder: ${summary}\n`;
                     icsContent += `END:VALARM\n`;
                     icsContent += 'END:VEVENT\n';
                 }
@@ -601,14 +618,17 @@
             
             icsContent += 'END:VCALENDAR';
             
-            const blob = new Blob([icsContent], { type: 'text/calendar' });
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = 'ramadan-schedule-2025.ics';
             a.click();
             
-            alert('✅ Calendar file downloaded! Open it on your phone to import all 30 days of alarms.');
+            // Show helpful message
+            setTimeout(() => {
+                alert('✅ Calendar file downloaded!\n\n📱 Next steps:\n\niPhone/iPad:\n• Tap the downloaded file\n• It will open in Calendar app\n• Tap "Add All" → Done!\n\nAndroid:\n• Open the file in Google Calendar\n• Tap "Import" → Done!\n\nDesktop:\n• Open your calendar app (Google/Outlook)\n• Import the .ics file\n• All 30 days will be added with alarms!\n\n🎉 Your phone will now remind you automatically!');
+            }, 500);
         }
 
         function formatDateForICS(date) {
@@ -618,6 +638,51 @@
             const hours = String(date.getHours()).padStart(2, '0');
             const minutes = String(date.getMinutes()).padStart(2, '0');
             return `${year}${month}${day}T${hours}${minutes}00`;
+        }
+
+        function addToGoogleCalendar() {
+            // Google Calendar can handle multiple events through URL, but we'll add them one by one
+            // Better approach: Create a shareable Google Calendar link
+            
+            const startDate = new Date(window.ramadanStartDate || '2025-02-18');
+            
+            // We'll add the first alarm event as a sample
+            const firstAlarmEvent = generatedSchedule.find(item => item.alarm);
+            
+            if (!firstAlarmEvent) {
+                alert('No alarm events found!');
+                return;
+            }
+            
+            const [hours, minutes] = firstAlarmEvent.time.split(':');
+            const eventDate = new Date(startDate);
+            eventDate.setHours(parseInt(hours), parseInt(minutes), 0);
+            
+            // Format dates for Google Calendar
+            const formatGoogleDate = (date) => {
+                return date.toISOString().replace(/-|:|\.\d\d\d/g, '');
+            };
+            
+            const eventStart = formatGoogleDate(eventDate);
+            const eventEnd = formatGoogleDate(new Date(eventDate.getTime() + 30 * 60000));
+            
+            const summary = encodeURIComponent(firstAlarmEvent.activity.replace(/🕌|🍽️|🍳|🌙|🚗|☀️/g, '').trim());
+            const details = encodeURIComponent(`Ramadan 2025 Schedule\n\nThis is one of your daily Ramadan reminders. All events repeat for 30 days.\n\nFull Schedule:\n${generatedSchedule.map(item => `${item.time} - ${item.activity}`).join('\n')}`);
+            
+            // Create Google Calendar URL with recurrence
+            const recurrence = encodeURIComponent('RRULE:FREQ=DAILY;COUNT=30');
+            
+            const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${summary}&dates=${eventStart}/${eventEnd}&details=${details}&recur=${recurrence}&ctz=UTC`;
+            
+            // Open in new window
+            window.open(googleCalUrl, '_blank');
+            
+            // Show instructions for adding all events
+            setTimeout(() => {
+                if (confirm('✅ Google Calendar opened!\n\nThis added ONE sample event (with 30-day repeat).\n\nTo add ALL your alarms automatically:\n• Click "Download .ics" button instead\n• Open the file in Google Calendar\n• All events will import at once\n\nWould you like to download the full calendar file now?')) {
+                    downloadICS();
+                }
+            }, 1000);
         }
 
         function exportToGoogleCalendar() {
