@@ -365,8 +365,11 @@
                 </div>
 
                 <div class="input-group">
-                    <label>⏱️ How long is your commute? (one way)</label>
-                    <input type="time" id="commuteTime" value="00:30">
+                    <label>🚗 How long does it take you to get to work?</label>
+                    <input type="number" id="commuteTime" value="30" min="0" max="180" placeholder="30">
+                    <small style="color: #666; font-size: 0.85em; margin-top: 5px; display: block;">
+                        In minutes. Example: 30 mins, 60 mins, 90 mins. Put 0 if you work from home.
+                    </small>
                 </div>
 
                 <div class="input-group">
@@ -447,12 +450,8 @@
             const maghrib = document.getElementById('maghribTime').value;
             const workStart = document.getElementById('workStart').value;
             const workEnd = document.getElementById('workEnd').value;
-            const commuteInput = document.getElementById('commuteTime').value;
+            const commute = parseInt(document.getElementById('commuteTime').value) || 0;
             const sleepHours = parseInt(document.getElementById('sleepHours').value);
-
-            // Convert commute time to minutes
-            const [commuteHours, commuteMins] = commuteInput.split(':').map(Number);
-            const commute = (commuteHours * 60) + commuteMins;
 
             // Calculate key times
             const fajrMinutes = timeToMinutes(fajr);
@@ -477,8 +476,18 @@
             const postFajr = minutesToTime(fajrMinutes + 15);
             schedule.push({ time: postFajr, activity: 'Quran/Dhikr (5-10 mins)', icon: '📖', alarm: false });
             
-            // Sleep or work prep
-            const bedtime = minutesToTime(1440 - (sleepHours * 60) + fajrMinutes - 30);
+            // Calculate proper bedtime (work backwards from suhoor time)
+            const suhoorMinutes = fajrMinutes - 30;
+            let bedtimeMinutes = suhoorMinutes - (sleepHours * 60);
+            
+            // If bedtime is negative, it means it's the previous day
+            if (bedtimeMinutes < 0) {
+                bedtimeMinutes = 1440 + bedtimeMinutes; // Add to 24 hours
+            }
+            
+            const bedtime = minutesToTime(bedtimeMinutes);
+            
+            // Determine if user can sleep after Fajr or needs to get ready for work
             if (workStartMinutes - fajrMinutes - 15 > 90) {
                 const backToSleep = minutesToTime(fajrMinutes + 30);
                 schedule.push({ time: backToSleep, activity: 'Back to sleep', icon: '😴', alarm: false });
@@ -537,7 +546,15 @@
             schedule.push({ time: bedtime, activity: 'Sleep', icon: '😴', alarm: true });
 
             generatedSchedule = schedule;
-            displaySchedule(schedule);
+            
+            // Sort schedule by time (convert to minutes for proper sorting)
+            generatedSchedule.sort((a, b) => {
+                const aMinutes = timeToMinutes(a.time);
+                const bMinutes = timeToMinutes(b.time);
+                return aMinutes - bMinutes;
+            });
+            
+            displaySchedule(generatedSchedule);
             
             // Update UI
             document.getElementById('setupCard').style.display = 'none';
